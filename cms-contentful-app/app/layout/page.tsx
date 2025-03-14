@@ -2,7 +2,7 @@ import { getAllPosts } from "@/lib/api";
 import { draftMode } from "next/headers";
 import Link from "next/link";
 
-export default async function Page() {
+export default async function LayoutPage() {
   const { isEnabled } = draftMode();
   const allPosts = await getAllPosts(isEnabled);
   
@@ -15,6 +15,17 @@ export default async function Page() {
   return (
     <div className="min-h-screen bg-[#e6ddc6] text-[#222] font-serif p-5">
       <div className="max-w-6xl mx-auto border border-[#222] p-4">
+        {/* Navigation */}
+        <div className="mb-6 flex justify-between items-center">
+          <Link href="/" className="text-blue-800 underline">
+            Back to Home
+          </Link>
+          <h1 className="text-2xl font-bold">Layout Branch Design</h1>
+          <Link href="/component" className="text-blue-800 underline">
+            View Component Design
+          </Link>
+        </div>
+
         {/* Newspaper Header */}
         <header className="text-center border-b-2 border-[#222] pb-2">
           <div className="flex justify-between text-xs mb-1">
@@ -30,22 +41,6 @@ export default async function Page() {
             <div>PRICE: 10 CENT</div>
           </div>
         </header>
-        
-        {/* Component and Layout Viewer Links */}
-        <div className="mt-4 mb-6 flex justify-center space-x-6">
-          <Link 
-            href="/component" 
-            className="bg-[#222] text-[#e6ddc6] px-4 py-2 inline-block hover:bg-[#444] transition-colors"
-          >
-            View Components
-          </Link>
-          <Link 
-            href="/layout" 
-            className="bg-[#222] text-[#e6ddc6] px-4 py-2 inline-block hover:bg-[#444] transition-colors"
-          >
-            View Layouts
-          </Link>
-        </div>
         
         {/* Main Headline */}
         <div className="mt-8 mb-6">

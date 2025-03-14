@@ -31,22 +31,6 @@ export default async function Page() {
           </div>
         </header>
         
-        {/* Component and Layout Viewer Links */}
-        <div className="mt-4 mb-6 flex justify-center space-x-6">
-          <Link 
-            href="/component" 
-            className="bg-[#222] text-[#e6ddc6] px-4 py-2 inline-block hover:bg-[#444] transition-colors"
-          >
-            View Components
-          </Link>
-          <Link 
-            href="/layout" 
-            className="bg-[#222] text-[#e6ddc6] px-4 py-2 inline-block hover:bg-[#444] transition-colors"
-          >
-            View Layouts
-          </Link>
-        </div>
-        
         {/* Main Headline */}
         <div className="mt-8 mb-6">
           <h2 className="text-5xl font-bold text-center mb-2">
