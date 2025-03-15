@@ -44,7 +44,7 @@ export default async function Page() {
           </div>
         </a>
       </div>
-      <div className="max-w-6xl mx-auto ">
+      <div className=" ">
         {/* Newspaper Header */}
         <header className="text-center border-b-2 border-[#222]">
           {/* Top black bar with date and weather */}

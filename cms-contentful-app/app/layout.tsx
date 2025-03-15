@@ -14,20 +14,18 @@ const inter = Inter({
 
 function Footer() {
   return (
-    <footer className="bg-[#e6ddc6] text-[#222] border-t border-[#222] mt-8 py-4">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="grid grid-cols-3 gap-6">
-          {/* Social Media */}
-          <div className="col-span-1">
-            <h3 className="text-sm font-bold mb-2 border-b border-[#222] pb-1">
-              CONNECT WITH US
-            </h3>
-            <div className="flex space-x-4 mt-3">
+    <footer className="">
+      <div className="flex grid grid-cols-3 gap-4">
+        {/* Social media links - updated to Instagram, Facebook, WhatsApp, YouTube */}
+
+        <div className="col-span-1 relative">
+          <div className=" flex flex-col z-20 justify-center content-between relative">
+            <div className="absolute top-0 left-10 transform -translate-x-1/2 space-y-4 flex flex-col justify-between my-10">
               {/* Instagram */}
-              <div className="w-8 h-8 rounded-full bg-[#222] flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-pink-500 flex items-center justify-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-[#e6ddc6]"
+                  className="h-6 w-6 text-white"
                   viewBox="0 0 24 24"
                   fill="currentColor"
                 >
@@ -35,32 +33,32 @@ function Footer() {
                 </svg>
               </div>
               {/* Facebook */}
-              <div className="w-8 h-8 rounded-full bg-[#222] flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-[#e6ddc6]"
+                  className="h-6 w-6 text-white"
                   viewBox="0 0 24 24"
                   fill="currentColor"
                 >
                   <path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z" />
                 </svg>
               </div>
-              {/* Twitter */}
-              <div className="w-8 h-8 rounded-full bg-[#222] flex items-center justify-center">
+              {/* WhatsApp */}
+              <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-[#e6ddc6]"
+                  className="h-6 w-6 text-white"
                   viewBox="0 0 24 24"
                   fill="currentColor"
                 >
-                  <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
+                  <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
                 </svg>
               </div>
               {/* YouTube */}
-              <div className="w-8 h-8 rounded-full bg-[#222] flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-[#e6ddc6]"
+                  className="h-6 w-6 text-white"
                   viewBox="0 0 24 24"
                   fill="currentColor"
                 >
@@ -68,49 +66,82 @@ function Footer() {
                 </svg>
               </div>
             </div>
-          </div>
-
-          {/* Contact Us */}
-          <div className="col-span-1">
-            <h3 className="text-sm font-bold mb-2 border-b border-[#222] pb-1">
-              CONTACT US
-            </h3>
-            <p className="text-xs mt-2">
-              TEN TEN NYC
-              <br />
-              123 Newspaper St.
-              <br />
-              New York, NY 10001
-              <br />
-              <span className="font-bold">Email:</span> info@tentenyc.com
-              <br />
-              <span className="font-bold">Phone:</span> (212) 555-1010
-            </p>
-          </div>
-
-          {/* Subscription */}
-          <div className="col-span-1">
-            <h3 className="text-sm font-bold mb-2 border-b border-[#222] pb-1">
-              SUBSCRIBE
-            </h3>
-            <p className="text-xs mt-2 mb-3">
-              Get the latest news delivered to your inbox. Subscribe to our
-              newsletter.
-            </p>
-            <div className="border border-[#222] p-1 inline-block">
-              <span className="bg-[#222] text-[#e6ddc6] px-3 py-1 text-xs font-bold">
-                SUBSCRIBE
-              </span>
+            <div className="flex justify-center items-center">
+              <img src="/contact.png" alt="contact image" className="" />
             </div>
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="text-center text-xs mt-8 pt-4 border-t border-[#222]">
-          <p>© {new Date().getFullYear()} TEN TEN NYC. All Rights Reserved.</p>
-          <p className="mt-1">
-            Established 1940 - Continuing the tradition of quality journalism.
-          </p>
+        {/* Magazine covers */}
+        <div className="col-span-1 flex justify-center items-center m-8">
+          <img
+            src="/magazines.png"
+            alt="Magazine cover 1"
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+        {/* Digital Gallery */}
+        <div className="col-span-1 p-4 flex justify-center items-center">
+          <div className="border-4 border-gray-800 p-2 bg-gray-900 rounded">
+            <div className="relative bg-gray-200 h-48 flex items-center justify-center">
+              <img
+                src="/digital_gallery.png"
+                alt="Digital Gallery"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <h2 className="text-3xl font-bold bg-black/50 text-white px-4 py-2">
+                  Digital Gallery
+                </h2>
+              </div>
+              <div className="absolute bottom-2 right-2 flex space-x-2">
+                <div className="w-4 h-4 rounded-full bg-gray-800"></div>
+                <div className="w-4 h-4 rounded-full bg-gray-800"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Sponsor logos */}
+      <div className="p-4 ">
+        <div className="flex justify-center items-center space-x-6">
+          <img
+            src="/sponsors/clip-path-group-16.png"
+            alt="Sponsor 1"
+            className="h-20 w-auto"
+          />
+          <img
+            src="/sponsors/clip-path-group-17.png"
+            alt="Sponsor 2"
+            className="h-20 w-auto"
+          />
+          <img
+            src="/sponsors/clip-path-group-18.png"
+            alt="Sponsor 3"
+            className="h-20 w-auto"
+          />
+          <img
+            src="/sponsors/clip-path-group-19.png"
+            alt="Sponsor 4"
+            className="h-20 w-auto"
+          />
+          <img
+            src="/sponsors/clip-path-group-20.png"
+            alt="Sponsor 5"
+            className="h-20 w-auto"
+          />
+          <img
+            src="/sponsors/dokidoki.png"
+            alt="Sponsor 6"
+            className="h-20 w-auto"
+          />
+          <img
+            src="/sponsors/sponsors1.png"
+            alt="Sponsor 7"
+            className="h-20 w-auto"
+          />
         </div>
       </div>
     </footer>
@@ -125,7 +156,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body className="bg-[#e6ddc6]">
-        <section className="min-h-screen">
+        <section className="max-w-6xl mx-auto min-h-screen">
           <main>{children}</main>
           <Footer />
         </section>
