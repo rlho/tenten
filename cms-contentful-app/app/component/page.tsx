@@ -17,9 +17,14 @@ export default async function ComponentPage() {
           Back to Home
         </Link>
         <h1 className="text-2xl font-bold">Component Branch Design</h1>
-        <Link href="/layout" className="text-blue-800 underline">
-          View Layout Design
-        </Link>
+        <div className="flex space-x-4">
+          <Link href="/layout" className="text-blue-800 underline">
+            View Layout Design
+          </Link>
+          <Link href="/layout1" className="text-blue-800 underline">
+            View Layout1 Design
+          </Link>
+        </div>
       </div>
 
       <div className="max-w-6xl mx-auto border-8 border-[#5d4b35] p-2">

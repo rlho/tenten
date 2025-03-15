@@ -21,9 +21,14 @@ export default async function LayoutPage() {
             Back to Home
           </Link>
           <h1 className="text-2xl font-bold">Layout Branch Design</h1>
-          <Link href="/component" className="text-blue-800 underline">
-            View Component Design
-          </Link>
+          <div className="flex space-x-4">
+            <Link href="/component" className="text-blue-800 underline">
+              View Components
+            </Link>
+            <Link href="/layout1" className="text-blue-800 underline">
+              View Layout1 Design
+            </Link>
+          </div>
         </div>
 
         {/* Newspaper Header */}
