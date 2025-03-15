@@ -13,6 +13,24 @@ export default async function Page() {
 
   return (
     <div className="min-h-screen bg-[#e6ddc6] text-[#222] p-5">
+      {/* Donation piggy bank with money overlay - positioned to match reference */}
+      <div className="absolute bottom-0 left-20 transform translate-y-1/4">
+        <div className="relative">
+          <img
+            src="/donation.png"
+            alt="Money"
+            className="w-64 h-auto object-contain"
+          />
+          <img
+            src="/clip-path-group-8.png"
+            alt="Donation piggy bank"
+            className="w-48 h-48 object-contain absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+          />
+          <span className="absolute bottom-8 left-1/2 top-1/4 transform -translate-x-1/2 text-white font-bold">
+            donation
+          </span>
+        </div>
+      </div>
       <div className="max-w-6xl mx-auto ">
         {/* Newspaper Header */}
         <header className="text-center border-b-2 border-[#222]">
@@ -33,7 +51,7 @@ export default async function Page() {
               <img src="/subscribe.svg" alt="Subscribe" className="w-full" />
             </a>
           </div>
-
+          {/* Logo */}
           <div className="absolute top-1 left-0 right-0 flex justify-center my-2">
             <img src="/logo.png" alt="TEN TEN" className="h-36 z-50" />
           </div>
