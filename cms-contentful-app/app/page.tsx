@@ -1,4 +1,9 @@
 import { getAllPosts } from "@/lib/api";
+import {
+  documentToReactComponents,
+  Options,
+} from "@contentful/rich-text-react-renderer";
+import { BLOCKS, Document, INLINES } from "@contentful/rich-text-types";
 import { draftMode } from "next/headers";
 
 export default async function Page() {
@@ -8,28 +13,36 @@ export default async function Page() {
   // Get the first post for the news section
   const latestPost = allPosts && allPosts.length > 0 ? allPosts[0] : null;
 
+  // デバッグ用にContentfulから取得したデータをログに出力
+  console.log("Latest post content structure:", latestPost?.content);
+
   // Get more posts for additional sections
   const morePosts = allPosts && allPosts.length > 1 ? allPosts.slice(1) : [];
 
   return (
     <div className="min-h-screen bg-[#e6ddc6] text-[#222] p-5">
-      {/* Donation piggy bank with money overlay - positioned to match reference */}
-      <div className="absolute bottom-0 left-20 transform translate-y-1/4">
-        <div className="relative">
-          <img
-            src="/donation.png"
-            alt="Money"
-            className="w-64 h-auto object-contain"
-          />
-          <img
-            src="/clip-path-group-8.png"
-            alt="Donation piggy bank"
-            className="w-48 h-48 object-contain absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-          />
-          <span className="absolute bottom-8 left-1/2 top-1/4 transform -translate-x-1/2 text-white font-bold">
-            donation
-          </span>
-        </div>
+      {/* Donation piggy bank with money overlay - fixed on left side when scrolling */}
+      <div className="fixed left-80 top-2/3 z-40">
+        <a
+          target="_blank"
+          href="https://www.paypal.com/donate/?hosted_button_id=R5RAWLKU3U9XL"
+        >
+          <div className="relative">
+            <img
+              src="/donation.png"
+              alt="Money"
+              className="w-64 h-auto object-contain"
+            />
+            <img
+              src="/clip-path-group-8.png"
+              alt="Donation piggy bank"
+              className="w-48 h-48 object-contain absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+            />
+            <span className="absolute bottom-8 left-1/2 top-1/4 transform -translate-x-1/2 text-white font-bold">
+              donation
+            </span>
+          </div>
+        </a>
       </div>
       <div className="max-w-6xl mx-auto ">
         {/* Newspaper Header */}
@@ -39,7 +52,8 @@ export default async function Page() {
             <div className="flex flex-col justify-start items-start text-xs border-t border-b border-[#222] py-1">
               <div>VOL. 172 - NO. 59</div>
               <div>TOKYO, FRIDAY, JULY 21, 2023</div>
-              <div>PRICE: 10 CENT</div>
+              <div>Sunny 70°F</div>
+              <div>PRICE: FREE</div>
             </div>
 
             {/* Email and subscribe buttons */}
@@ -51,9 +65,9 @@ export default async function Page() {
               <img src="/subscribe.svg" alt="Subscribe" className="w-full" />
             </a>
           </div>
-          {/* Logo */}
-          <div className="absolute top-1 left-0 right-0 flex justify-center my-2">
-            <img src="/logo.png" alt="TEN TEN" className="h-36 z-50" />
+          {/* Logo - fixed when scrolling */}
+          <div className="fixed top-1 left-0 right-0 flex justify-center my-2 z-50">
+            <img src="/logo.png" alt="TEN TEN" className="h-36" />
           </div>
         </header>
 
@@ -78,14 +92,164 @@ export default async function Page() {
             )}
           </div>
 
-          {/* Main Article Text */}
-          <p className="text-sm leading-relaxed mb-6">
-            Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam
-            nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
-            volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation
-            ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo
-            consequat.
-          </p>
+          {/* Main Article Text - Rich Text Content */}
+          <div className="text-sm leading-relaxed mb-6">
+            {latestPost ? (
+              (() => {
+                // Check if content exists
+                if (!latestPost.content) {
+                  return <p>No content available</p>;
+                }
+
+                try {
+                  // Contentfulの GraphQL APIから取得したリッチテキスト形式
+                  if (latestPost.content.json) {
+                    // リッチテキスト内の画像アセットを処理するための設定
+                    const options: Options = {
+                      renderNode: {
+                        [BLOCKS.PARAGRAPH]: (node, children) => (
+                          <p className="mb-4">{children}</p>
+                        ),
+                        [BLOCKS.HEADING_1]: (node, children) => (
+                          <h1 className="text-3xl font-bold mb-4">
+                            {children}
+                          </h1>
+                        ),
+                        [BLOCKS.HEADING_2]: (node, children) => (
+                          <h2 className="text-2xl font-bold mb-3">
+                            {children}
+                          </h2>
+                        ),
+                        [BLOCKS.HEADING_3]: (node, children) => (
+                          <h3 className="text-xl font-bold mb-2">{children}</h3>
+                        ),
+                        [BLOCKS.UL_LIST]: (node, children) => (
+                          <ul className="list-disc pl-5 mb-4">{children}</ul>
+                        ),
+                        [BLOCKS.OL_LIST]: (node, children) => (
+                          <ol className="list-decimal pl-5 mb-4">{children}</ol>
+                        ),
+                        [BLOCKS.LIST_ITEM]: (node, children) => (
+                          <li className="mb-1">{children}</li>
+                        ),
+                        [INLINES.HYPERLINK]: (node, children) => (
+                          <a
+                            href={node.data.uri}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline"
+                          >
+                            {children}
+                          </a>
+                        ),
+                        // 埋め込み画像の処理
+                        [BLOCKS.EMBEDDED_ASSET]: (node) => {
+                          // アセットIDを取得
+                          const assetId = node.data.target.sys.id;
+
+                          // リンクされたアセットを検索
+                          const asset =
+                            latestPost.content.links?.assets?.block?.find(
+                              (asset: any) => asset.sys.id === assetId
+                            );
+
+                          if (asset) {
+                            return (
+                              <div className="my-4">
+                                <img
+                                  src={asset.url}
+                                  alt={asset.description || ""}
+                                  className="w-full h-auto border border-[#222] p-1"
+                                />
+                                {asset.description && (
+                                  <p className="text-xs text-center mt-1">
+                                    {asset.description}
+                                  </p>
+                                )}
+                              </div>
+                            );
+                          }
+
+                          return <p>Missing asset</p>;
+                        },
+                      },
+                    };
+
+                    return documentToReactComponents(
+                      latestPost.content.json,
+                      options
+                    );
+                  }
+
+                  // 他の形式のチェック
+                  if (typeof latestPost.content === "string") {
+                    return <p>{latestPost.content}</p>;
+                  }
+
+                  if (
+                    latestPost.content &&
+                    typeof latestPost.content === "object" &&
+                    latestPost.content.nodeType === "document" &&
+                    Array.isArray(latestPost.content.content)
+                  ) {
+                    return documentToReactComponents(
+                      latestPost.content as Document,
+                      {
+                        renderNode: {
+                          [BLOCKS.PARAGRAPH]: (node, children) => (
+                            <p className="mb-4">{children}</p>
+                          ),
+                          [BLOCKS.HEADING_1]: (node, children) => (
+                            <h1 className="text-3xl font-bold mb-4">
+                              {children}
+                            </h1>
+                          ),
+                          [BLOCKS.HEADING_2]: (node, children) => (
+                            <h2 className="text-2xl font-bold mb-3">
+                              {children}
+                            </h2>
+                          ),
+                          [BLOCKS.HEADING_3]: (node, children) => (
+                            <h3 className="text-xl font-bold mb-2">
+                              {children}
+                            </h3>
+                          ),
+                          [BLOCKS.UL_LIST]: (node, children) => (
+                            <ul className="list-disc pl-5 mb-4">{children}</ul>
+                          ),
+                          [BLOCKS.OL_LIST]: (node, children) => (
+                            <ol className="list-decimal pl-5 mb-4">
+                              {children}
+                            </ol>
+                          ),
+                          [BLOCKS.LIST_ITEM]: (node, children) => (
+                            <li className="mb-1">{children}</li>
+                          ),
+                        },
+                      }
+                    );
+                  }
+
+                  // デバッグ情報を表示
+                  console.error(
+                    "Content structure:",
+                    JSON.stringify(latestPost.content, null, 2)
+                  );
+                  return <p>Content format is not supported</p>;
+                } catch (error) {
+                  console.error("Error rendering rich text:", error);
+                  return (
+                    <p>
+                      Error rendering content:{" "}
+                      {error instanceof Error ? error.message : String(error)}
+                    </p>
+                  );
+                }
+              })()
+            ) : (
+              <p>Your text goes here</p>
+            )}
+          </div>
         </div>
 
         {/* EXTRA! Section */}
