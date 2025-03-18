@@ -83,24 +83,26 @@ function Footer() {
 
         {/* Digital Gallery */}
         <div className="col-span-1 p-4 flex justify-center items-center">
-          <div className="border-4 border-gray-800 p-2 bg-gray-900 rounded">
-            <div className="relative bg-gray-200 h-48 flex items-center justify-center">
-              <img
-                src="/digital_gallery.png"
-                alt="Digital Gallery"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <h2 className="text-3xl font-bold bg-black/50 text-white px-4 py-2">
-                  Digital Gallery
-                </h2>
-              </div>
-              <div className="absolute bottom-2 right-2 flex space-x-2">
-                <div className="w-4 h-4 rounded-full bg-gray-800"></div>
-                <div className="w-4 h-4 rounded-full bg-gray-800"></div>
+          <a href="/gallery" className="block w-full">
+            <div className="border-4 border-gray-800 p-2 bg-gray-900 rounded hover:shadow-lg transition-transform transform hover:scale-105">
+              <div className="relative bg-gray-200 h-48 flex items-center justify-center">
+                <img
+                  src="/digital_gallery.png"
+                  alt="Digital Gallery"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <h2 className="text-3xl font-bold bg-black/50 text-white px-4 py-2">
+                    Digital Gallery
+                  </h2>
+                </div>
+                <div className="absolute bottom-2 right-2 flex space-x-2">
+                  <div className="w-4 h-4 rounded-full bg-gray-800"></div>
+                  <div className="w-4 h-4 rounded-full bg-gray-800"></div>
+                </div>
               </div>
             </div>
-          </div>
+          </a>
         </div>
       </div>
 

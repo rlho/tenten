@@ -282,6 +282,13 @@ export default async function Page() {
                           ARCHIVE
                         </h2>
                       </div>
+                      <div className="bg-[#222] p-3 my-1 flex items-center justify-center border-b border-gray-700">
+                        <a href="/gallery">
+                          <h2 className="text-2xl font-bold tracking-wider">
+                            ART GALLERY
+                          </h2>
+                        </a>
+                      </div>
                     </div>
                   </h3>
                 </div>
@@ -336,42 +343,7 @@ export default async function Page() {
         </div>
 
         {/* Bottom Section */}
-        <div className="grid grid-cols-2 gap-6 mt-6 border-t-2 border-[#222] pt-4">
-          {/* Left Column */}
-          <div className="col-span-1">
-            <h3 className="text-xl font-bold mb-2">RETRO BICYCLE</h3>
-            <div className="flex items-center justify-center mb-2">
-              <span className="text-lg">★</span>
-              <span className="mx-2 text-sm font-bold">STAY HAPPY</span>
-              <span className="text-lg">★</span>
-            </div>
-            <p className="text-xs leading-relaxed">
-              Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam
-              nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam
-              erat volutpat.
-            </p>
-          </div>
-
-          {/* Right Column */}
-          <div className="col-span-1">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-1">
-                <h4 className="text-sm font-bold mb-1">SUBMITTIONS</h4>
-                <p className="text-xs leading-relaxed">
-                  Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed
-                  diam nonummy nibh euismod tincidunt.
-                </p>
-              </div>
-              <div className="col-span-1">
-                <h4 className="text-sm font-bold mb-1">SHOP</h4>
-                <p className="text-xs leading-relaxed">
-                  Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed
-                  diam nonummy nibh euismod tincidunt.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div className="grid grid-cols-2 gap-6 mt-6 border-t-2 border-[#222] pt-4"></div>
       </div>
     </div>
   );
