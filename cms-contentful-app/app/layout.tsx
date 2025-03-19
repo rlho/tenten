@@ -225,12 +225,10 @@ export default function RootLayout({
             {/* Top black bar with date and weather */}
             <div className="bg-black text-white bg-[#222] p-2 sm:p-3 my-1 flex flex-col sm:flex-row justify-between items-center relative z-20">
               <div className="flex flex-col justify-start items-center sm:items-start text-xs border-t border-b border-[#222] py-1 w-full sm:w-auto">
-                {/*
                 <div>VOL. 172 - NO. 59</div>
                 <div>TOKYO, FRIDAY, JULY 21, 2023</div>
                 <div>Sunny 70°F</div>
                 <div>PRICE: FREE</div>
-              */}
               </div>
 
               {/* Email and subscribe buttons */}
@@ -239,7 +237,7 @@ export default function RootLayout({
                 target="_blank"
                 className="w-24 md:w-32 mt-2 sm:mt-0"
               >
-                <img src="/subscribe.svg" alt="Subscribe" className="w-full" />
+                <img src="/subscribe.png" alt="Subscribe" className="w-full" />
               </a>
             </div>
             {/* ロゴは上部で固定表示済み */}
