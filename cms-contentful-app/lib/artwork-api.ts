@@ -24,6 +24,7 @@ const ARTWORK_GRAPHQL_FIELDS = `
 // Function to fetch artwork from Contentful using GraphQL
 async function fetchGraphQL(query: string, preview = false): Promise<any> {
   console.log("GraphQL Query:", query);
+  console.log(`Making GraphQL request at ${new Date().toISOString()}`);
 
   // 環境変数のチェック
   const spaceId = process.env.CONTENTFUL_SPACE_ID;
@@ -51,12 +52,12 @@ async function fetchGraphQL(query: string, preview = false): Promise<any> {
   );
 
   try {
+    // fetchオプションでキャッシュを強制的に無効化（no-storeのみを使用）
     const response = await fetch(endpoint, {
       method: "POST",
       headers,
       body: JSON.stringify({ query }),
       cache: "no-store",
-      next: { revalidate: 0 },
     });
 
     if (!response.ok) {
@@ -103,19 +104,29 @@ function extractArtworkEntries(fetchResponse: any): any[] {
 export async function getAllArtwork(
   isDraftMode: boolean = false
 ): Promise<any[]> {
+  console.log(
+    `Getting all artwork at ${new Date().toISOString()}, isDraftMode: ${isDraftMode}`
+  );
+
+  // タイムスタンプを付加してキャッシュバスティングを確実にする
+  const timestamp = Date.now();
+
   const entries = await fetchGraphQL(
     `query {
       artworksCollection(order: createdAt_DESC, preview: ${
         isDraftMode ? "true" : "false"
-      }) {
+      }, limit: 100) {
         items {
           ${ARTWORK_GRAPHQL_FIELDS}
         }
       }
-    }`,
+    }` + `# cache-bust: ${timestamp}`,
     isDraftMode
   );
-  return extractArtworkEntries(entries);
+
+  const artworks = extractArtworkEntries(entries);
+  console.log(`Found ${artworks.length} artworks`);
+  return artworks;
 }
 
 // Get artwork by artist ID

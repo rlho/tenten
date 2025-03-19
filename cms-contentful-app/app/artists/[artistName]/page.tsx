@@ -195,7 +195,7 @@ export default async function ArtistGalleryPage({
 
   // アーティスト情報と作品を取得
   let artist = null;
-  let artworks = [];
+  let artworks: any[] = [];
 
   try {
     // 一時的にContentfulからのデータ取得はコメントアウト

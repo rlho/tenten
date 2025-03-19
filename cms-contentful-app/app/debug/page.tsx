@@ -1,13 +1,13 @@
 import { getAllArtwork } from "../../lib/artwork-api";
 
 export default async function DebugPage() {
-  let artworks = [];
-  let error = null;
+  let artworks: any[] = [];
+  let error: Error | null = null;
 
   try {
     artworks = await getAllArtwork();
   } catch (e) {
-    error = e;
+    error = e instanceof Error ? e : new Error(String(e));
   }
 
   return (
@@ -35,7 +35,7 @@ CONTENTFUL_PREVIEW_ACCESS_TOKEN: ${
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-2 text-red-600">Error</h2>
           <pre className="bg-red-100 p-4 rounded overflow-auto text-red-900">
-            {error.toString()}
+            {error.message || error.toString()}
           </pre>
         </div>
       )}
