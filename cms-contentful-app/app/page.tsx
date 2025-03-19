@@ -22,7 +22,7 @@ export default async function Page() {
   return (
     <div className="min-h-screen bg-[#e6ddc6] text-[#222] p-5">
       {/* Donation piggy bank with money overlay - fixed on left side when scrolling */}
-      <div className="fixed left-80 top-2/3 z-40">
+      <div className="fixed left-[8%] top-2/3 z-40">
         <a
           target="_blank"
           href="https://www.paypal.com/donate/?hosted_button_id=R5RAWLKU3U9XL"

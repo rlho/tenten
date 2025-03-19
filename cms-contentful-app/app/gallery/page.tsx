@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getAllArtwork } from "../../lib/artwork-api";
+import ClientLogger from "../components/ClientLogger";
 
 // Frame component to display artwork
 function Frame({
@@ -15,6 +16,11 @@ function Frame({
   rotate?: string;
   zIndex?: string;
 }) {
+  // Debug artwork object structure
+  console.log("Frame received artwork id:", artwork?.sys?.id);
+  console.log("Frame received artwork title:", artwork?.title);
+  console.log("Frame received artwork image url:", artwork?.image?.url);
+
   return (
     <div
       className={`relative ${width} ${height} ${rotate} ${zIndex} transform transition-transform hover:scale-105 hover:z-20`}
@@ -138,14 +144,45 @@ function getRandomPosition() {
   };
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function GalleryPage() {
   // Fetch artwork from Contentful
-  const artworks = await getAllArtwork();
+  let artworks = [];
+  let fetchError = null;
+
+  try {
+    artworks = await getAllArtwork();
+    console.log("Fetched artworks length:", artworks.length);
+
+    if (artworks.length > 0) {
+      console.log("Sample artwork[0]:", JSON.stringify(artworks[0]));
+      // Check if the structure matches what Frame component expects
+      console.log("Artwork has sys.id:", !!artworks[0]?.sys?.id);
+      console.log("Artwork has title:", !!artworks[0]?.title);
+      console.log("Artwork has artistName:", !!artworks[0]?.artistName);
+      console.log("Artwork has image.url:", !!artworks[0]?.image?.url);
+    } else {
+      console.log("No artworks were fetched from Contentful");
+    }
+  } catch (error) {
+    console.error("Error fetching artwork:", error);
+    fetchError = error;
+    // Use mock data in case of error
+    artworks = [];
+  }
 
   // If no artworks are found, use mock data for demonstration
-  debugger;
-  console.log("artworks", artworks.length);
+  console.log("Using mock data:", artworks.length === 0);
   const displayArtworks = artworks.length > 0 ? artworks : mockArtworks;
+  console.log("displayArtworks length:", displayArtworks.length);
+
+  if (displayArtworks.length > 0) {
+    console.log(
+      "Sample displayArtwork[0]:",
+      JSON.stringify(displayArtworks[0])
+    );
+  }
 
   // Generate random positions for each artwork
   const artworksWithPositions = displayArtworks.map((artwork) => {
@@ -158,7 +195,6 @@ export default async function GalleryPage() {
     <div className="min-h-screen">
       <div className="max-w-6xl mx-auto p-6">
         <div className="mb-8 text-center">
-          <h1 className="text-5xl font-bold mb-4">TEN TEN Art Gallery</h1>
           <p className="text-xl mb-6">
             Showcasing the creativity of our community
           </p>
@@ -182,9 +218,7 @@ export default async function GalleryPage() {
         <div className="relative bg-gray-200 min-h-[600px] p-8 rounded-lg shadow-inner">
           {/* TEN TEN Logo */}
           <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-30">
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-pink-500 via-green-500 to-blue-500 text-transparent bg-clip-text p-2 rounded-lg">
-              TEN TEN
-            </h2>
+            <h2 className="text-4xl font-bold bg-gradient-to-r from-pink-500 via-green-500 to-blue-500 text-transparent bg-clip-text p-2 rounded-lg"></h2>
           </div>
 
           {/* Artwork Frames */}
@@ -206,16 +240,6 @@ export default async function GalleryPage() {
             </div>
           </div>
 
-          {/* Donation Piggy Bank */}
-          <div className="absolute bottom-4 left-4 w-24 h-24">
-            <img
-              src="/donation.png"
-              alt="Donation"
-              className="w-full h-full object-contain"
-            />
-            <p className="text-center text-sm font-bold">donation</p>
-          </div>
-
           {/* Artist Statement */}
           <div className="absolute bottom-4 right-4 max-w-md bg-white/80 p-4 text-sm">
             <p className="font-bold">Artist Statement</p>
@@ -226,6 +250,14 @@ export default async function GalleryPage() {
             </p>
           </div>
         </div>
+
+        {/* デバッグ情報 */}
+        <ClientLogger
+          data={{
+            artworksLength: artworks.length,
+            firstArtwork: artworks[0] || null,
+          }}
+        />
       </div>
     </div>
   );
