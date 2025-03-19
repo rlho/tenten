@@ -1,16 +1,22 @@
-import Link from "next/link";
 import { draftMode } from "next/headers";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
-import MoreStories from "../../more-stories";
 import Avatar from "../../avatar";
-import Date from "../../date";
 import CoverImage from "../../cover-image";
+import Date from "../../date";
+import MoreStories from "../../more-stories";
 
-import { Markdown } from "@/lib/markdown";
 import { getAllPosts, getPostAndMorePosts } from "@/lib/api";
+import { Markdown } from "@/lib/markdown";
 
 export async function generateStaticParams() {
   const allPosts = await getAllPosts(false);
+
+  if (!allPosts || !Array.isArray(allPosts)) {
+    console.error("getAllPosts returned invalid data:", allPosts);
+    return [];
+  }
 
   return allPosts.map((post) => ({
     slug: post.slug,
@@ -24,6 +30,10 @@ export default async function PostPage({
 }) {
   const { isEnabled } = draftMode();
   const { post, morePosts } = await getPostAndMorePosts(params.slug, isEnabled);
+
+  if (!post) {
+    notFound();
+  }
 
   return (
     <div className="container mx-auto px-5">

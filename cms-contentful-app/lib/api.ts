@@ -29,22 +29,35 @@ const POST_GRAPHQL_FIELDS = `
 `;
 
 async function fetchGraphQL(query: string, preview = false): Promise<any> {
-  return fetch(
-    `https://graphql.contentful.com/content/v1/spaces/${process.env.CONTENTFUL_SPACE_ID}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${
-          preview
-            ? process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN
-            : process.env.CONTENTFUL_ACCESS_TOKEN
-        }`,
-      },
-      body: JSON.stringify({ query }),
-      next: { tags: ["posts"] },
+  try {
+    const response = await fetch(
+      `https://graphql.contentful.com/content/v1/spaces/${process.env.CONTENTFUL_SPACE_ID}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${
+            preview
+              ? process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN
+              : process.env.CONTENTFUL_ACCESS_TOKEN
+          }`,
+        },
+        body: JSON.stringify({ query }),
+        next: { tags: ["posts"] },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Network response was not ok: ${response.status} ${response.statusText}`
+      );
     }
-  ).then((response) => response.json());
+
+    return response.json();
+  } catch (error) {
+    console.error("Error fetching GraphQL data:", error);
+    return { data: { postCollection: { items: [] } } };
+  }
 }
 
 function extractPost(fetchResponse: any): any {
@@ -52,7 +65,7 @@ function extractPost(fetchResponse: any): any {
 }
 
 function extractPostEntries(fetchResponse: any): any[] {
-  return fetchResponse?.data?.postCollection?.items;
+  return fetchResponse?.data?.postCollection?.items || [];
 }
 
 export async function getPreviewPostBySlug(slug: string | null): Promise<any> {
@@ -70,51 +83,75 @@ export async function getPreviewPostBySlug(slug: string | null): Promise<any> {
 }
 
 export async function getAllPosts(isDraftMode: boolean): Promise<any[]> {
-  const entries = await fetchGraphQL(
-    `query {
-      postCollection(where: { slug_exists: true }, order: date_DESC, preview: ${
-        isDraftMode ? "true" : "false"
-      }) {
-        items {
-          ${POST_GRAPHQL_FIELDS}
+  try {
+    const entries = await fetchGraphQL(
+      `query {
+        postCollection(where: { slug_exists: true }, order: date_DESC, preview: ${
+          isDraftMode ? "true" : "false"
+        }) {
+          items {
+            ${POST_GRAPHQL_FIELDS}
+          }
         }
-      }
-    }`,
-    isDraftMode
-  );
-  return extractPostEntries(entries);
+      }`,
+      isDraftMode
+    );
+
+    const posts = extractPostEntries(entries);
+    if (!posts || posts.length === 0) {
+      console.warn("No posts found in Contentful");
+    }
+    return posts;
+  } catch (error) {
+    console.error("Error getting all posts:", error);
+    return [];
+  }
 }
 
 export async function getPostAndMorePosts(
   slug: string,
   preview: boolean
 ): Promise<any> {
-  const entry = await fetchGraphQL(
-    `query {
-      postCollection(where: { slug: "${slug}" }, preview: ${
-      preview ? "true" : "false"
-    }, limit: 1) {
-        items {
-          ${POST_GRAPHQL_FIELDS}
+  try {
+    const entry = await fetchGraphQL(
+      `query {
+        postCollection(where: { slug: "${slug}" }, preview: ${
+        preview ? "true" : "false"
+      }, limit: 1) {
+          items {
+            ${POST_GRAPHQL_FIELDS}
+          }
         }
-      }
-    }`,
-    preview
-  );
-  const entries = await fetchGraphQL(
-    `query {
-      postCollection(where: { slug_not_in: "${slug}" }, order: date_DESC, preview: ${
-      preview ? "true" : "false"
-    }, limit: 2) {
-        items {
-          ${POST_GRAPHQL_FIELDS}
+      }`,
+      preview
+    );
+    const entries = await fetchGraphQL(
+      `query {
+        postCollection(where: { slug_not_in: "${slug}" }, order: date_DESC, preview: ${
+        preview ? "true" : "false"
+      }, limit: 2) {
+          items {
+            ${POST_GRAPHQL_FIELDS}
+          }
         }
-      }
-    }`,
-    preview
-  );
-  return {
-    post: extractPost(entry),
-    morePosts: extractPostEntries(entries),
-  };
+      }`,
+      preview
+    );
+
+    const post = extractPost(entry);
+    if (!post) {
+      console.warn(`Post with slug "${slug}" not found`);
+    }
+
+    return {
+      post: post || null,
+      morePosts: extractPostEntries(entries),
+    };
+  } catch (error) {
+    console.error(`Error getting post with slug "${slug}":`, error);
+    return {
+      post: null,
+      morePosts: [],
+    };
+  }
 }
