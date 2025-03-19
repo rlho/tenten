@@ -12,6 +12,13 @@ const ARTWORK_GRAPHQL_FIELDS = `
   }
   description
   createdAt
+  artist {
+    sys {
+      id
+    }
+    name
+    slug
+  }
 `;
 
 // Function to fetch artwork from Contentful using GraphQL
@@ -107,6 +114,46 @@ export async function getAllArtwork(
       }
     }`,
     isDraftMode
+  );
+  return extractArtworkEntries(entries);
+}
+
+// Get artwork by artist ID
+export async function getArtworkByArtistId(
+  artistId: string,
+  preview: boolean = false
+): Promise<any[]> {
+  const entries = await fetchGraphQL(
+    `query {
+      artworksCollection(where: { artist: { sys: { id: "${artistId}" } } }, preview: ${
+      preview ? "true" : "false"
+    }) {
+        items {
+          ${ARTWORK_GRAPHQL_FIELDS}
+        }
+      }
+    }`,
+    preview
+  );
+  return extractArtworkEntries(entries);
+}
+
+// Get artwork by artist name
+export async function getArtworkByArtistName(
+  artistName: string,
+  preview: boolean = false
+): Promise<any[]> {
+  const entries = await fetchGraphQL(
+    `query {
+      artworksCollection(where: { artist: { name: "${artistName}" } }, preview: ${
+      preview ? "true" : "false"
+    }) {
+        items {
+          ${ARTWORK_GRAPHQL_FIELDS}
+        }
+      }
+    }`,
+    preview
   );
   return extractArtworkEntries(entries);
 }

@@ -1,5 +1,6 @@
 import { createClient } from "contentful-management";
 import { NextRequest, NextResponse } from "next/server";
+import { getArtistByName } from "../../../lib/artist-api";
 
 // Note: For content management operations (creating/updating entries),
 // we need a Management Token, not the regular Access Token
@@ -10,13 +11,27 @@ const getClient = () => {
   });
 };
 
+// Helper function to create a slug from a name
+const createSlug = (name: string): string => {
+  return name
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "") // Remove special characters
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/--+/g, "-"); // Replace multiple hyphens with a single hyphen
+};
+
 export async function POST(request: NextRequest) {
   try {
     // Parse the form data
     const formData = await request.formData();
+    const createNewArtist = formData.get("createNewArtist") === "true";
     const artistName = formData.get("artistName") as string;
+    const artistBio = createNewArtist ? (formData.get("artistBio") as string) || "" : "";
     const title = formData.get("title") as string;
     const description = (formData.get("description") as string) || "";
+    const medium = (formData.get("medium") as string) || "";
+    const year = (formData.get("year") as string) || "";
+    const dimensions = (formData.get("dimensions") as string) || "";
     const imageFile = formData.get("image") as File;
 
     if (!artistName || !title || !imageFile) {
@@ -26,36 +41,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // For demonstration purposes, we'll log the submission details
-    // In a real implementation, you would:
-    // 1. Upload the image to Contentful
-    // 2. Create a new artwork entry with the image reference
-
     console.log("Artwork submission:", {
+      createNewArtist,
       artistName,
+      artistBio,
       title,
       description,
+      medium,
+      year,
+      dimensions,
       imageFileName: imageFile.name,
       imageFileSize: imageFile.size,
     });
-
-    // Since we don't have a valid CONTENTFUL_MANAGEMENT_TOKEN in the .env.local file,
-    // we'll just return a success response for demonstration.
-    // Note: The CONTENTFUL_ACCESS_TOKEN cannot be used for creating entries,
-    // it can only be used for reading content.
-    //return NextResponse.json({
-    //  success: true,
-    //  message: "Artwork submitted successfully",
-    //});
-
-    // This is how you would implement it with a management token:
 
     const client = getClient();
     const space = await client.getSpace(process.env.CONTENTFUL_SPACE_ID || "");
     const environment = await space.getEnvironment("master");
 
     // Upload the image
-    const imageBuffer = Buffer.from(await imageFile.arrayBuffer());
+    const arrayBuffer = await imageFile.arrayBuffer();
     const uploadedAsset = await environment.createAssetFromFiles({
       fields: {
         title: {
@@ -68,7 +72,7 @@ export async function POST(request: NextRequest) {
           "en-US": {
             contentType: imageFile.type,
             fileName: imageFile.name,
-            file: imageBuffer,
+            file: arrayBuffer,
           },
         },
       },
@@ -78,17 +82,62 @@ export async function POST(request: NextRequest) {
     const processedAsset = await uploadedAsset.processForAllLocales();
     const publishedAsset = await processedAsset.publish();
 
-    // Create the artwork entry using the "Artworks" content model
-    const entry = await environment.createEntry("artworks", {
-      fields: {
-        artistName: {
-          "en-US": artistName,
+    // Handle artist creation or lookup
+    let artistEntry;
+    let artistId;
+    
+    if (createNewArtist) {
+      // Create a new artist entry
+      const artistSlug = createSlug(artistName);
+      
+      artistEntry = await environment.createEntry("artists", {
+        fields: {
+          name: {
+            "en-US": artistName,
+          },
+          bio: {
+            "en-US": artistBio,
+          },
+          slug: {
+            "en-US": artistSlug,
+          },
         },
+      });
+      
+      // Publish the artist entry
+      const publishedArtistEntry = await artistEntry.publish();
+      artistId = publishedArtistEntry.sys.id;
+    } else {
+      // Find existing artist
+      const existingArtist = await getArtistByName(artistName);
+      
+      if (!existingArtist) {
+        return NextResponse.json(
+          { error: "Selected artist not found" },
+          { status: 404 }
+        );
+      }
+      
+      artistId = existingArtist.sys.id;
+    }
+
+    // Create the artwork entry using the "Artworks" content model
+    const artworkEntry = await environment.createEntry("artworks", {
+      fields: {
         title: {
           "en-US": title,
         },
         description: {
           "en-US": description,
+        },
+        medium: {
+          "en-US": medium,
+        },
+        year: {
+          "en-US": year,
+        },
+        dimensions: {
+          "en-US": dimensions,
         },
         image: {
           "en-US": {
@@ -99,16 +148,25 @@ export async function POST(request: NextRequest) {
             },
           },
         },
+        artist: {
+          "en-US": {
+            sys: {
+              type: "Link",
+              linkType: "Entry",
+              id: artistId,
+            },
+          },
+        },
       },
     });
 
-    // Publish the entry
-    const publishedEntry = await entry.publish();
+    // Publish the artwork entry
+    const publishedArtworkEntry = await artworkEntry.publish();
 
     return NextResponse.json({
       success: true,
       message: "Artwork submitted successfully",
-      id: publishedEntry.sys.id,
+      id: publishedArtworkEntry.sys.id,
     });
   } catch (error) {
     console.error("Error submitting artwork:", error);

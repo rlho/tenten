@@ -2,11 +2,14 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function DetailedSubmitPage() {
   const router = useRouter();
   const [artistName, setArtistName] = useState("");
+  const [artistBio, setArtistBio] = useState("");
+  const [existingArtist, setExistingArtist] = useState(false);
+  const [artists, setArtists] = useState<any[]>([]);
   const [title, settitle] = useState("");
   const [description, setDescription] = useState("");
   const [medium, setMedium] = useState("");
@@ -17,6 +20,27 @@ export default function DetailedSubmitPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [isLoadingArtists, setIsLoadingArtists] = useState(true);
+
+  // Fetch artists on component mount
+  useEffect(() => {
+    async function fetchArtists() {
+      try {
+        const response = await fetch('/api/artists');
+        if (!response.ok) {
+          throw new Error('Failed to fetch artists');
+        }
+        const data = await response.json();
+        setArtists(data.artists || []);
+      } catch (err) {
+        console.error('Error fetching artists:', err);
+      } finally {
+        setIsLoadingArtists(false);
+      }
+    }
+
+    fetchArtists();
+  }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -33,10 +57,28 @@ export default function DetailedSubmitPage() {
     }
   };
 
+  const handleArtistChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedArtistName = e.target.value;
+    setArtistName(selectedArtistName);
+    
+    if (selectedArtistName === "new") {
+      setExistingArtist(false);
+      setArtistName("");
+      setArtistBio("");
+    } else {
+      setExistingArtist(true);
+      // Find the selected artist to get their bio
+      const selectedArtist = artists.find(artist => artist.name === selectedArtistName);
+      if (selectedArtist) {
+        setArtistBio(selectedArtist.bio || "");
+      }
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!artistName || !title || !image) {
+    if ((!existingArtist && !artistName) || !title || !image) {
       setError("Please fill in all required fields");
       return;
     }
@@ -46,7 +88,17 @@ export default function DetailedSubmitPage() {
 
     try {
       const formData = new FormData();
-      formData.append("artistName", artistName);
+      
+      // If creating a new artist
+      if (!existingArtist) {
+        formData.append("createNewArtist", "true");
+        formData.append("artistName", artistName);
+        formData.append("artistBio", artistBio);
+      } else {
+        formData.append("createNewArtist", "false");
+        formData.append("artistName", artistName);
+      }
+      
       formData.append("title", title);
       formData.append("description", description);
       formData.append("medium", medium);
@@ -69,6 +121,8 @@ export default function DetailedSubmitPage() {
 
       // Reset form after successful submission
       setArtistName("");
+      setArtistBio("");
+      setExistingArtist(false);
       settitle("");
       setDescription("");
       setMedium("");
@@ -126,20 +180,68 @@ export default function DetailedSubmitPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label
-                htmlFor="artistName"
+                htmlFor="artistSelect"
                 className="block text-gray-700 font-bold mb-2"
               >
-                Full Name *
+                Artist *
               </label>
-              <input
-                type="text"
-                id="artistName"
-                value={artistName}
-                onChange={(e) => setArtistName(e.target.value)}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                required
-              />
+              {isLoadingArtists ? (
+                <div className="animate-pulse bg-gray-200 h-10 rounded"></div>
+              ) : (
+                <select
+                  id="artistSelect"
+                  value={existingArtist ? artistName : "new"}
+                  onChange={handleArtistChange}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  required
+                >
+                  <option value="new">-- Create New Artist --</option>
+                  {artists.map((artist) => (
+                    <option key={artist.sys?.id || artist.name} value={artist.name}>
+                      {artist.name}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
+
+            {!existingArtist && (
+              <>
+                <div>
+                  <label
+                    htmlFor="artistName"
+                    className="block text-gray-700 font-bold mb-2"
+                  >
+                    Artist Name *
+                  </label>
+                  <input
+                    type="text"
+                    id="artistName"
+                    value={artistName}
+                    onChange={(e) => setArtistName(e.target.value)}
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    required
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label
+                    htmlFor="artistBio"
+                    className="block text-gray-700 font-bold mb-2"
+                  >
+                    Artist Bio
+                  </label>
+                  <textarea
+                    id="artistBio"
+                    value={artistBio}
+                    onChange={(e) => setArtistBio(e.target.value)}
+                    rows={3}
+                    placeholder="Tell us about the artist..."
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  ></textarea>
+                </div>
+              </>
+            )}
 
             <div>
               <label

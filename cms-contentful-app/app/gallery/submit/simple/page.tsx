@@ -2,17 +2,52 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function SimpleSubmitPage() {
   const router = useRouter();
   const [artistName, setArtistName] = useState("");
+  const [existingArtist, setExistingArtist] = useState(false);
+  const [artists, setArtists] = useState<any[]>([]);
   const [title, settitle] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [isLoadingArtists, setIsLoadingArtists] = useState(true);
+
+  // Fetch artists on component mount
+  useEffect(() => {
+    async function fetchArtists() {
+      try {
+        const response = await fetch('/api/artists');
+        if (!response.ok) {
+          throw new Error('Failed to fetch artists');
+        }
+        const data = await response.json();
+        setArtists(data.artists || []);
+      } catch (err) {
+        console.error('Error fetching artists:', err);
+      } finally {
+        setIsLoadingArtists(false);
+      }
+    }
+
+    fetchArtists();
+  }, []);
+
+  const handleArtistChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedArtistName = e.target.value;
+    setArtistName(selectedArtistName);
+    
+    if (selectedArtistName === "new") {
+      setExistingArtist(false);
+      setArtistName("");
+    } else {
+      setExistingArtist(true);
+    }
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -32,7 +67,7 @@ export default function SimpleSubmitPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!artistName || !title || !image) {
+    if ((!existingArtist && !artistName) || !title || !image) {
       setError("Please fill in all required fields");
       return;
     }
@@ -42,7 +77,17 @@ export default function SimpleSubmitPage() {
 
     try {
       const formData = new FormData();
-      formData.append("artistName", artistName);
+      
+      // If creating a new artist
+      if (!existingArtist) {
+        formData.append("createNewArtist", "true");
+        formData.append("artistName", artistName);
+        formData.append("artistBio", ""); // No bio in simple form
+      } else {
+        formData.append("createNewArtist", "false");
+        formData.append("artistName", artistName);
+      }
+      
       formData.append("title", title);
       formData.append("image", image);
 
@@ -61,6 +106,7 @@ export default function SimpleSubmitPage() {
 
       // Reset form after successful submission
       setArtistName("");
+      setExistingArtist(false);
       settitle("");
       setImage(null);
       setImagePreview(null);
@@ -111,19 +157,48 @@ export default function SimpleSubmitPage() {
 
           <div className="mb-6">
             <label
-              htmlFor="artistName"
+              htmlFor="artistSelect"
               className="block text-gray-700 font-bold mb-2"
             >
-              Full Name *
+              Artist *
             </label>
-            <input
-              type="text"
-              id="artistName"
-              value={artistName}
-              onChange={(e) => setArtistName(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
+            {isLoadingArtists ? (
+              <div className="animate-pulse bg-gray-200 h-10 rounded mb-4"></div>
+            ) : (
+              <select
+                id="artistSelect"
+                value={existingArtist ? artistName : "new"}
+                onChange={handleArtistChange}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4"
+                required
+              >
+                <option value="new">-- Create New Artist --</option>
+                {artists.map((artist) => (
+                  <option key={artist.sys?.id || artist.name} value={artist.name}>
+                    {artist.name}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {!existingArtist && (
+              <div>
+                <label
+                  htmlFor="artistName"
+                  className="block text-gray-700 font-bold mb-2"
+                >
+                  Artist Name *
+                </label>
+                <input
+                  type="text"
+                  id="artistName"
+                  value={artistName}
+                  onChange={(e) => setArtistName(e.target.value)}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  required
+                />
+              </div>
+            )}
           </div>
 
           <div className="mb-6">
