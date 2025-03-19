@@ -158,7 +158,35 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body className="bg-[#e6ddc6]">
+        {/* 全てのページで固定表示されるロゴ */}
+        <div className="fixed top-1 left-0 right-0 flex justify-center my-2 z-50">
+          <img src="/logo.png" alt="TEN TEN" className="h-36" />
+        </div>
+
         <section className="max-w-6xl mx-auto min-h-screen">
+          {/* 共通ヘッダー部分 */}
+          <header className="text-center border-b-2 border-[#222]">
+            {/* Top black bar with date and weather */}
+            <div className="bg-black text-white bg-[#222] p-3 my-1 flex justify-between items-center relative z-20">
+              <div className="flex flex-col justify-start items-start text-xs border-t border-b border-[#222] py-1">
+                <div>VOL. 172 - NO. 59</div>
+                <div>TOKYO, FRIDAY, JULY 21, 2023</div>
+                <div>Sunny 70°F</div>
+                <div>PRICE: FREE</div>
+              </div>
+
+              {/* Email and subscribe buttons */}
+              <a
+                href="https://mailchi.mp/f26243da7ffe/ten-ten-nyc"
+                target="_blank"
+                className="w-32"
+              >
+                <img src="/subscribe.svg" alt="Subscribe" className="w-full" />
+              </a>
+            </div>
+            {/* ロゴは上部で固定表示済み */}
+          </header>
+
           <main>{children}</main>
           <Footer />
         </section>
