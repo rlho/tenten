@@ -23,11 +23,13 @@ export default async function Page() {
 
           <h1 className="text-6xl font-bold my-4 tracking-wide">TEN TEN</h1>
 
+          {/*
           <div className="flex justify-between text-xs border-t border-b border-[#222] py-1">
             <div>VOL. 172 - NO. 59</div>
             <div>TOKYO, FRIDAY, JULY 21, 2023 - 8 PAGES IN 4 SECTION</div>
             <div>PRICE: 10 CENT</div>
           </div>
+          */}
         </header>
 
         {/* Main Headline */}

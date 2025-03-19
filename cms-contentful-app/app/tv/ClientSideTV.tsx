@@ -54,8 +54,6 @@ export default function ClientSideTV({ artworks }: { artworks: Artwork[] }) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-100">
       <div className="max-w-4xl w-full">
-        <h1 className="text-3xl font-bold text-center mb-8">Art TV Gallery</h1>
-
         {/* TV with artwork */}
         <div className="relative mx-auto" style={{ maxWidth: "800px" }}>
           {/* テレビのスクリーン全体（白い部分も含む）を黒くする */}
@@ -86,19 +84,20 @@ export default function ClientSideTV({ artworks }: { artworks: Artwork[] }) {
             }}
           ></div>
 
-          {/* テレビの下に表示される作品 */}
+          {/* テレビの作品表示エリア - モニター中央に配置 */}
           <div
             className="absolute"
             style={{
-              top: "50%",
+              top: "42%",
               left: "50%",
               transform: "translate(-50%, -50%)",
-              width: "62%",
-              height: "48%",
+              width: "70%",
+              height: "50%",
               zIndex: 16,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              overflow: "hidden",
             }}
           >
             {/* 画像エリア */}
@@ -115,13 +114,11 @@ export default function ClientSideTV({ artworks }: { artworks: Artwork[] }) {
                     : currentArtwork.image.url
                 }
                 alt={currentArtwork.title}
-                className="object-contain"
+                className="object-cover w-full h-full"
                 onError={handleImageError}
                 style={{
-                  maxHeight: "100%",
-                  maxWidth: "100%",
                   display: "block",
-                  margin: "0 auto",
+                  objectPosition: "center", // 画像を中央に配置
                 }}
               />
             </div>

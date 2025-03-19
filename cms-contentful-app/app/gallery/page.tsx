@@ -230,9 +230,7 @@ export default async function GalleryPage() {
       <div className="max-w-6xl mx-auto p-6">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold mb-4">Artist Gallery</h1>
-          <p className="text-lg mb-6">
-            Discover our talented artists and their work
-          </p>
+
           <div className="flex justify-center mb-4">
             <Link
               href="/artists"
