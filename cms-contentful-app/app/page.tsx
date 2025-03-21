@@ -1,23 +1,15 @@
 import { getAllPosts } from "@/lib/api";
-import {
-  documentToReactComponents,
-  Options,
-} from "@contentful/rich-text-react-renderer";
-import { BLOCKS, Document, INLINES } from "@contentful/rich-text-types";
 import { draftMode } from "next/headers";
+import PostSlider from "./post-slider";
 
 export default async function Page() {
   const { isEnabled } = draftMode();
   const allPosts = await getAllPosts(isEnabled);
 
-  // Get the first post for the news section
-  const latestPost = allPosts && allPosts.length > 0 ? allPosts[0] : null;
-
   // デバッグ用にContentfulから取得したデータをログに出力
-  console.log("Latest post content structure:", latestPost?.content);
-
-  // Get more posts for additional sections
-  const morePosts = allPosts && allPosts.length > 1 ? allPosts.slice(1) : [];
+  if (allPosts && allPosts.length > 0) {
+    console.log("Latest post content structure:", allPosts[0]?.content);
+  }
 
   return (
     <div className="min-h-screen bg-[#e6ddc6] text-[#222] p-5">
@@ -70,186 +62,8 @@ export default async function Page() {
       </div>
 
       <div className="">
-        {/* Main Headline */}
-        <div className="my-8 mb-6">
-          <h2 className="text-3xl md:text-5xl font-bold text-center mb-6">
-            {latestPost ? latestPost.title : "YOUR HEADLINE HERE"}
-          </h2>
-
-          {/* Main Image */}
-          <div className="border border-[#222] p-1 mb-4">
-            {latestPost && latestPost.coverImage ? (
-              <img
-                src={latestPost.coverImage.url}
-                alt={latestPost.title || "Featured image"}
-                className="w-full h-[200px] md:h-[400px] object-cover"
-              />
-            ) : (
-              <div className="w-full h-[200px] md:h-[400px] bg-[#222] text-[#e6ddc6] flex items-center justify-center">
-                Your Image Here
-              </div>
-            )}
-          </div>
-
-          {/* Main Article Text - Rich Text Content */}
-          <div className="text-sm leading-relaxed mb-6">
-            {latestPost ? (
-              (() => {
-                // Check if content exists
-                if (!latestPost.content) {
-                  return <p>No content available</p>;
-                }
-
-                try {
-                  // Contentfulの GraphQL APIから取得したリッチテキスト形式
-                  if (latestPost.content.json) {
-                    // リッチテキスト内の画像アセットを処理するための設定
-                    const options: Options = {
-                      renderNode: {
-                        [BLOCKS.PARAGRAPH]: (node, children) => (
-                          <p className="mb-4">{children}</p>
-                        ),
-                        [BLOCKS.HEADING_1]: (node, children) => (
-                          <h1 className="text-3xl font-bold mb-4">
-                            {children}
-                          </h1>
-                        ),
-                        [BLOCKS.HEADING_2]: (node, children) => (
-                          <h2 className="text-2xl font-bold mb-3">
-                            {children}
-                          </h2>
-                        ),
-                        [BLOCKS.HEADING_3]: (node, children) => (
-                          <h3 className="text-xl font-bold mb-2">{children}</h3>
-                        ),
-                        [BLOCKS.UL_LIST]: (node, children) => (
-                          <ul className="list-disc pl-5 mb-4">{children}</ul>
-                        ),
-                        [BLOCKS.OL_LIST]: (node, children) => (
-                          <ol className="list-decimal pl-5 mb-4">{children}</ol>
-                        ),
-                        [BLOCKS.LIST_ITEM]: (node, children) => (
-                          <li className="mb-1">{children}</li>
-                        ),
-                        [INLINES.HYPERLINK]: (node, children) => (
-                          <a
-                            href={node.data.uri}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 underline"
-                          >
-                            {children}
-                          </a>
-                        ),
-                        // 埋め込み画像の処理
-                        [BLOCKS.EMBEDDED_ASSET]: (node) => {
-                          // アセットIDを取得
-                          const assetId = node.data.target.sys.id;
-
-                          // リンクされたアセットを検索
-                          const asset =
-                            latestPost.content.links?.assets?.block?.find(
-                              (asset: any) => asset.sys.id === assetId
-                            );
-
-                          if (asset) {
-                            return (
-                              <div className="my-4">
-                                <img
-                                  src={asset.url}
-                                  alt={asset.description || ""}
-                                  className="w-full h-auto border border-[#222] p-1"
-                                />
-                                {asset.description && (
-                                  <p className="text-xs text-center mt-1">
-                                    {asset.description}
-                                  </p>
-                                )}
-                              </div>
-                            );
-                          }
-
-                          return <p>Missing asset</p>;
-                        },
-                      },
-                    };
-
-                    return documentToReactComponents(
-                      latestPost.content.json,
-                      options
-                    );
-                  }
-
-                  // 他の形式のチェック
-                  if (typeof latestPost.content === "string") {
-                    return <p>{latestPost.content}</p>;
-                  }
-
-                  if (
-                    latestPost.content &&
-                    typeof latestPost.content === "object" &&
-                    latestPost.content.nodeType === "document" &&
-                    Array.isArray(latestPost.content.content)
-                  ) {
-                    return documentToReactComponents(
-                      latestPost.content as Document,
-                      {
-                        renderNode: {
-                          [BLOCKS.PARAGRAPH]: (node, children) => (
-                            <p className="mb-4">{children}</p>
-                          ),
-                          [BLOCKS.HEADING_1]: (node, children) => (
-                            <h1 className="text-3xl font-bold mb-4">
-                              {children}
-                            </h1>
-                          ),
-                          [BLOCKS.HEADING_2]: (node, children) => (
-                            <h2 className="text-2xl font-bold mb-3">
-                              {children}
-                            </h2>
-                          ),
-                          [BLOCKS.HEADING_3]: (node, children) => (
-                            <h3 className="text-xl font-bold mb-2">
-                              {children}
-                            </h3>
-                          ),
-                          [BLOCKS.UL_LIST]: (node, children) => (
-                            <ul className="list-disc pl-5 mb-4">{children}</ul>
-                          ),
-                          [BLOCKS.OL_LIST]: (node, children) => (
-                            <ol className="list-decimal pl-5 mb-4">
-                              {children}
-                            </ol>
-                          ),
-                          [BLOCKS.LIST_ITEM]: (node, children) => (
-                            <li className="mb-1">{children}</li>
-                          ),
-                        },
-                      }
-                    );
-                  }
-
-                  // デバッグ情報を表示
-                  console.error(
-                    "Content structure:",
-                    JSON.stringify(latestPost.content, null, 2)
-                  );
-                  return <p>Content format is not supported</p>;
-                } catch (error) {
-                  console.error("Error rendering rich text:", error);
-                  return (
-                    <p>
-                      Error rendering content:{" "}
-                      {error instanceof Error ? error.message : String(error)}
-                    </p>
-                  );
-                }
-              })()
-            ) : (
-              <p>Your text goes here</p>
-            )}
-          </div>
-        </div>
+        {/* Post Slider */}
+        <PostSlider posts={allPosts || []} />
 
         {/* EXTRA! Section */}
         <div className="border-t-2 border-[#222] pt-4">
@@ -306,16 +120,18 @@ export default async function Page() {
 
               <div className="flex flex-col md:flex-row justify-center items-center">
                 <div className="p-1 flex flex-col justify-center items-center mb-6 md:mb-0">
-                  <div className="flex items-center justify-center">
-                    <h2 className="text-5xl md:text-7xl font-bold tracking-wider">
-                      SHOP
-                    </h2>
-                  </div>
-                  <img
-                    src="/clip-path-group-9.png"
-                    alt="Shop"
-                    className="border border-[#222] w-56"
-                  />
+                  <a href="https://tenten.nyc/shop-1" target="_blank">
+                    <div className="flex items-center justify-center">
+                      <h2 className="text-5xl md:text-7xl font-bold tracking-wider">
+                        SHOP
+                      </h2>
+                    </div>
+                    <img
+                      src="/clip-path-group-9.png"
+                      alt="Shop"
+                      className="border border-[#222] w-56"
+                    />
+                  </a>
                 </div>
                 {/* Kawaii Fashion Challenge */}
                 <div className="w-full md:w-50 h-auto mb-6 md:mb-0">

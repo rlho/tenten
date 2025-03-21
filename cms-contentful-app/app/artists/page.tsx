@@ -76,7 +76,6 @@ export default async function ArtistsPage() {
                   <h2 className="text-2xl font-bold mb-3">{artist.name}</h2>
                   <p className="text-gray-600 mb-4">{artist.bio}</p>
                   <div className="text-blue-600 hover:text-blue-800 flex items-center justify-between">
-                    <span>View Artist Gallery</span>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-5 w-5"

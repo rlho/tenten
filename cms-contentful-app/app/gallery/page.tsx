@@ -33,7 +33,7 @@ function Frame({
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gray-200">
+            <div className="w-full h-full flex items-center justify-center">
               <p className="text-gray-500 text-center p-4">
                 {artwork.title || "Artwork"}
               </p>
@@ -228,9 +228,8 @@ export default async function GalleryPage() {
   return (
     <div className="min-h-screen">
       <div className="max-w-6xl mx-auto p-6">
+        {/*
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold mb-4">Artist Gallery</h1>
-
           <div className="flex justify-center mb-4">
             <Link
               href="/artists"
@@ -240,15 +239,11 @@ export default async function GalleryPage() {
             </Link>
           </div>
         </div>
+        */}
 
         {/* Artist Gallery */}
-        <div className="relative bg-gray-200 min-h-[600px] p-8 rounded-lg shadow-inner">
+        <div className="relative min-h-[600px] p-8 rounded-lg shadow-inner">
           {/* TEN TEN Logo */}
-          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-30">
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-pink-500 via-green-500 to-blue-500 text-transparent bg-clip-text p-2 rounded-lg">
-              Artists
-            </h2>
-          </div>
 
           {/* Artist Cards */}
           <div className="relative mt-16">
@@ -259,29 +254,25 @@ export default async function GalleryPage() {
                     key={artist.name}
                     className={`${width} ${height} ${rotation} transform transition-transform hover:scale-105 bg-white p-4 shadow-lg rounded-lg`}
                   >
-                    <h3 className="text-xl font-bold mb-2">{artist.name}</h3>
-                    <p className="text-sm mb-4 line-clamp-3">{artist.bio}</p>
-
-                    {sampleArtwork && sampleArtwork.image && (
-                      <div className="relative h-40 mb-2">
-                        <img
-                          src={sampleArtwork.image.url}
-                          alt={sampleArtwork.title}
-                          className="w-full h-full object-cover rounded"
-                        />
-                        <div className="absolute bottom-0 right-0 p-1 bg-black bg-opacity-70 text-white text-xs">
-                          {sampleArtwork.title}
-                        </div>
-                      </div>
-                    )}
-
                     <Link
                       href={`/artists/${encodeURIComponent(artist.name)}`}
                       className="block w-full"
                     >
-                      <button className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded text-sm">
-                        View Profile
-                      </button>
+                      <h3 className="text-xl font-bold mb-2">{artist.name}</h3>
+                      <p className="text-sm mb-4 line-clamp-3">{artist.bio}</p>
+
+                      {sampleArtwork && sampleArtwork.image && (
+                        <div className="relative h-40 mb-2">
+                          <img
+                            src={sampleArtwork.image.url}
+                            alt={sampleArtwork.title}
+                            className="w-full h-full object-cover rounded"
+                          />
+                          <div className="absolute bottom-0 right-0 p-1 bg-black bg-opacity-70 text-white text-xs">
+                            {sampleArtwork.title}
+                          </div>
+                        </div>
+                      )}
                     </Link>
                   </div>
                 )

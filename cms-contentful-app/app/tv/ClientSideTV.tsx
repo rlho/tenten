@@ -52,7 +52,7 @@ export default function ClientSideTV({ artworks }: { artworks: Artwork[] }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-100">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="max-w-4xl w-full">
         {/* TV with artwork */}
         <div className="relative mx-auto" style={{ maxWidth: "800px" }}>
