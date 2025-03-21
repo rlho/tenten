@@ -150,11 +150,13 @@ function Footer() {
 
         {/* Magazine covers */}
         <div className="col-span-1 flex justify-center items-center m-4 md:m-8">
-          <img
-            src="/magazines.png"
-            alt="Magazine cover 1"
-            className="w-full h-auto object-cover"
-          />
+          <a href="/books" target="_blank">
+            <img
+              src="/magazines.png"
+              alt="Magazine cover 1"
+              className="w-full h-auto object-cover"
+            />
+          </a>
         </div>
 
         {/* Digital Gallery */}

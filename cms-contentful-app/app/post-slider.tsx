@@ -166,7 +166,7 @@ export default function PostSlider({ posts }: PostSliderProps) {
                   : "block";
 
                 const imageWrapperClass = isVertical
-                  ? "w-full md:w-2/3 flex-shrink-0"
+                  ? "w-full md:w-1/2 flex-shrink-0"
                   : "w-full";
 
                 const textWrapperClass = isVertical
@@ -331,7 +331,7 @@ export default function PostSlider({ posts }: PostSliderProps) {
               {/* Main Image */}
               <div
                 className={`border border-[#222] mb-4 md:mb-0 ${
-                  isVertical ? "md:w-2/3" : "w-full"
+                  isVertical ? "md:w-1/2" : "w-full"
                 }`}
               >
                 <div className="relative w-full h-full">

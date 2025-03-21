@@ -20,6 +20,7 @@ type GalleryWallProps = {
   title?: string;
   subtitle?: string;
   className?: string;
+  showName?: boolean;
 };
 
 // Function to get random position values
@@ -53,12 +54,14 @@ function Frame({
   height = "h-64",
   rotate = "rotate-0",
   zIndex = "z-10",
+  showName = true,
 }: {
   item: GalleryItem;
   width?: string;
   height?: string;
   rotate?: string;
   zIndex?: string;
+  showName?: boolean;
 }) {
   return (
     <div
@@ -68,7 +71,11 @@ function Frame({
         {/* マットボーダー */}
         <div className="relative w-full h-full bg-gray-50 p-2">
           {/* 画像コンテナ */}
-          <div className="relative w-full h-[85%] overflow-hidden">
+          <div
+            className={`relative w-full ${
+              showName ? "h-[85%]" : "h-full"
+            } overflow-hidden`}
+          >
             {item.image?.url ? (
               <Image
                 src={item.image.url}
@@ -84,11 +91,13 @@ function Frame({
             )}
           </div>
           {/* アーティスト名 */}
-          <div className="h-[15%] flex items-center justify-center mt-2">
-            <span className="text-gray-800 text-sm font-medium text-center">
-              {item.name}
-            </span>
-          </div>
+          {showName && (
+            <div className="h-[15%] flex items-center justify-center mt-2">
+              <span className="text-gray-800 text-sm font-medium text-center">
+                {item.name}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -100,6 +109,7 @@ export default function GalleryWall({
   title,
   subtitle,
   className = "",
+  showName = true,
 }: GalleryWallProps) {
   const [shuffledItems, setShuffledItems] = useState<GalleryItem[]>([]);
   const [gridLayout, setGridLayout] = useState<Array<{ x: number; y: number }>>(
@@ -178,6 +188,7 @@ export default function GalleryWall({
                   height={height}
                   rotate={rotation}
                   zIndex={`z-${index + 1}`}
+                  showName={showName}
                 />
               </div>
             )
