@@ -1,3 +1,5 @@
+import { fetchGraphQL } from "./contentful";
+
 // GraphQL fields for artwork
 const ARTWORK_GRAPHQL_FIELDS = `
   sys {
@@ -20,74 +22,6 @@ const ARTWORK_GRAPHQL_FIELDS = `
     slug
   }
 `;
-
-// Function to fetch artwork from Contentful using GraphQL
-async function fetchGraphQL(query: string, preview = false): Promise<any> {
-  console.log("GraphQL Query:", query);
-  console.log(`Making GraphQL request at ${new Date().toISOString()}`);
-
-  // 環境変数のチェック
-  const spaceId = process.env.CONTENTFUL_SPACE_ID;
-  const accessToken = preview
-    ? process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN
-    : process.env.CONTENTFUL_ACCESS_TOKEN;
-
-  console.log("Contentful Space ID:", spaceId);
-  console.log("Access Token available:", !!accessToken);
-  console.log("Using Preview Token:", preview);
-
-  // エンドポイントとヘッダーの構築
-  const endpoint = `https://graphql.contentful.com/content/v1/spaces/${spaceId}`;
-  const headers = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${accessToken}`,
-  };
-
-  console.log("Contentful API Endpoint:", endpoint);
-  console.log(
-    "Headers:",
-    JSON.stringify(headers, (key, value) =>
-      key === "Authorization" ? "Bearer ***" : value
-    )
-  );
-
-  try {
-    // fetchオプションでキャッシュを強制的に無効化（no-storeのみを使用）
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({ query }),
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      console.error(
-        "Contentful API Error:",
-        response.status,
-        response.statusText
-      );
-      throw new Error(
-        `Contentful API Error: ${response.status} ${response.statusText}`
-      );
-    }
-
-    const json = await response.json();
-    console.log("GraphQL Response Status:", response.status);
-
-    // エラーチェック
-    if (json.errors) {
-      console.error("GraphQL Errors:", JSON.stringify(json.errors));
-      throw new Error(`GraphQL Errors: ${JSON.stringify(json.errors)}`);
-    }
-
-    console.log("GraphQL Response Data:", JSON.stringify(json.data));
-
-    return json;
-  } catch (error) {
-    console.error("Fetch Error:", error);
-    throw error;
-  }
-}
 
 // Extract a single artwork from the response
 function extractArtwork(fetchResponse: any): any {
@@ -121,7 +55,7 @@ export async function getAllArtwork(
         }
       }
     }` + `# cache-bust: ${timestamp}`,
-    isDraftMode
+    { preview: isDraftMode, cache: "no-store" }
   );
 
   const artworks = extractArtworkEntries(entries);
@@ -144,7 +78,7 @@ export async function getArtworkByArtistId(
         }
       }
     }`,
-    preview
+    { preview }
   );
   return extractArtworkEntries(entries);
 }
@@ -164,7 +98,7 @@ export async function getArtworkByArtistName(
         }
       }
     }`,
-    preview
+    { preview }
   );
   return extractArtworkEntries(entries);
 }
@@ -184,7 +118,7 @@ export async function getArtworkById(
         }
       }
     }`,
-    preview
+    { preview }
   );
   return extractArtwork(entry);
 }

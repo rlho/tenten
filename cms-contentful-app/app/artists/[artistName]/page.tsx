@@ -1,5 +1,4 @@
 import Link from "next/link";
-import ClientLogger from "../../components/ClientLogger";
 
 // Frame component to display artwork (same as in gallery page)
 function Frame({
@@ -297,15 +296,6 @@ export default async function ArtistGalleryPage({
             )}
           </div>
         )}
-
-        {/* デバッグ情報 */}
-        <ClientLogger
-          data={{
-            artistName,
-            artistFound: !!artist,
-            artworksLength: artworks.length,
-          }}
-        />
       </div>
     </div>
   );

@@ -135,23 +135,18 @@ export default function ClientSideTV({ artworks }: { artworks: Artwork[] }) {
         </div>
 
         {/* Artwork information */}
-        <div className="mt-6 p-6 bg-white rounded-lg shadow-md max-w-2xl mx-auto">
+        <div className="mt-6 p-6 rounded-lg max-w-2xl mx-auto">
           <h2 className="text-2xl font-bold mb-2">{currentArtwork.title}</h2>
           <h3 className="text-xl text-gray-700 mb-4">
             by {currentArtwork.artistName}
           </h3>
           <p className="text-gray-600">{currentArtwork.description}</p>
-          {imageError && (
-            <p className="text-amber-600 mt-2 text-sm">
-              * 元の画像が見つからなかったため、サンプル画像を表示しています
-            </p>
-          )}
         </div>
 
         <div className="text-center mt-8">
           <button
             onClick={selectRandomArtwork}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="hover:text-gray-700 text-white font-bold py-2 px-4 rounded"
           >
             Show Another Artwork
           </button>

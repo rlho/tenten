@@ -1,3 +1,5 @@
+import { fetchGraphQL } from "./contentful";
+
 const POST_GRAPHQL_FIELDS = `
   slug
   title
@@ -28,38 +30,6 @@ const POST_GRAPHQL_FIELDS = `
   }
 `;
 
-async function fetchGraphQL(query: string, preview = false): Promise<any> {
-  try {
-    const response = await fetch(
-      `https://graphql.contentful.com/content/v1/spaces/${process.env.CONTENTFUL_SPACE_ID}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${
-            preview
-              ? process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN
-              : process.env.CONTENTFUL_ACCESS_TOKEN
-          }`,
-        },
-        body: JSON.stringify({ query }),
-        next: { tags: ["posts"] },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        `Network response was not ok: ${response.status} ${response.statusText}`
-      );
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error("Error fetching GraphQL data:", error);
-    return { data: { postCollection: { items: [] } } };
-  }
-}
-
 function extractPost(fetchResponse: any): any {
   return fetchResponse?.data?.postCollection?.items?.[0];
 }
@@ -77,7 +47,7 @@ export async function getPreviewPostBySlug(slug: string | null): Promise<any> {
         }
       }
     }`,
-    true
+    { preview: true }
   );
   return extractPost(entry);
 }
@@ -94,7 +64,7 @@ export async function getAllPosts(isDraftMode: boolean): Promise<any[]> {
           }
         }
       }`,
-      isDraftMode
+      { preview: isDraftMode, tags: ["posts"] }
     );
 
     const posts = extractPostEntries(entries);
@@ -123,7 +93,7 @@ export async function getPostAndMorePosts(
           }
         }
       }`,
-      preview
+      { preview }
     );
     const entries = await fetchGraphQL(
       `query {
@@ -135,7 +105,7 @@ export async function getPostAndMorePosts(
           }
         }
       }`,
-      preview
+      { preview }
     );
 
     const post = extractPost(entry);
