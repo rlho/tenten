@@ -68,14 +68,26 @@ function Frame({
         {/* マットボーダー */}
         <div className="relative w-full h-full bg-gray-50 p-2">
           {/* 画像コンテナ */}
-          <div className="relative w-full h-full overflow-hidden">
-            <Image
-              src={item.image.url}
-              alt={item.name}
-              fill
-              className="object-contain"
-              sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            />
+          <div className="relative w-full h-[85%] overflow-hidden">
+            {item.image?.url ? (
+              <Image
+                src={item.image.url}
+                alt={item.name}
+                fill
+                className="object-contain"
+                sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                <span className="text-gray-400 text-lg">{item.name}</span>
+              </div>
+            )}
+          </div>
+          {/* アーティスト名 */}
+          <div className="h-[15%] flex items-center justify-center mt-2">
+            <span className="text-gray-800 text-sm font-medium text-center">
+              {item.name}
+            </span>
           </div>
         </div>
       </div>

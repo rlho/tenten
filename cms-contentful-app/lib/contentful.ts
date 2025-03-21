@@ -101,3 +101,26 @@ export async function getBooks() {
   const { data } = await fetchGraphQL(query, { cache: "no-store" });
   return data.bookCollection.items;
 }
+
+export async function getAllArtists() {
+  const query = `
+    query {
+      artistsCollection {
+        items {
+          sys {
+            id
+          }
+          name
+          image {
+            url
+            width
+            height
+          }
+        }
+      }
+    }
+  `;
+
+  const { data } = await fetchGraphQL(query, { cache: "no-store" });
+  return data.artistsCollection.items;
+}

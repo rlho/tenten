@@ -1,5 +1,6 @@
-import Link from "next/link";
-import ClientLogger from "../components/ClientLogger";
+import GalleryWall from "@/app/components/gallery-wall";
+import { getAllArtists } from "@/lib/contentful";
+import { Metadata } from "next";
 
 // Frame component to display artwork
 function Frame({
@@ -186,107 +187,20 @@ function getRandomPosition() {
   };
 }
 
+export const metadata: Metadata = {
+  title: "Gallery | TENTEN",
+  description: "TENTEN artists",
+};
+
 export const dynamic = "force-dynamic";
 
 export default async function GalleryPage() {
-  // Fetch artists from Contentful
-  let artists = [];
-  let fetchError = null;
-
-  try {
-    // 一時的に常にモックデータを使用するため、Contentfulからのデータ取得はコメントアウト
-    // artists = await getAllArtists();
-    // console.log("Fetched artists length:", artists.length);
-    // if (artists.length === 0) {
-    //   console.log("No artists were fetched from Contentful");
-    // }
-  } catch (error) {
-    console.error("Error fetching artists:", error);
-    // エラーメッセージは表示せず、コンソールのみにログを残す
-  }
-
-  // 常にモックデータを使用
-  const displayArtists = mockArtists;
-  console.log("Using mock artists data");
-
-  // For each artist, get a sample artwork to display
-  const artistsWithArtwork = displayArtists.map((artist: any) => {
-    // モックアーティストにはモックアートワークを関連付ける
-    const mockArtwork = mockArtworks.find(
-      (artwork) => artwork.artistName === artist.name
-    );
-    return { artist, sampleArtwork: mockArtwork };
-  });
-
-  // Generate random positions for each artist card
-  const artistsWithPositions = artistsWithArtwork.map((item: any) => {
-    const { size, rotation } = getRandomPosition();
-    const [width, height] = size.split(" ");
-    return { ...item, width, height, rotation };
-  });
+  const artists = await getAllArtists();
 
   return (
     <div className="min-h-screen">
       <div className="max-w-6xl mx-auto p-6">
-        {/*
-        <div className="mb-8 text-center">
-          <div className="flex justify-center mb-4">
-            <Link
-              href="/artists"
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded"
-            >
-              View All Artists
-            </Link>
-          </div>
-        </div>
-        */}
-
-        {/* Artist Gallery */}
-        <div className="relative min-h-[600px] p-8 rounded-lg shadow-inner">
-          {/* TEN TEN Logo */}
-
-          {/* Artist Cards */}
-          <div className="relative mt-16">
-            <div className="flex flex-wrap justify-center gap-6">
-              {artistsWithPositions.map(
-                ({ artist, sampleArtwork, width, height, rotation }, index) => (
-                  <div
-                    key={artist.name}
-                    className={`${width} ${height} ${rotation} transform transition-transform hover:scale-105 bg-white p-4 shadow-lg rounded-lg`}
-                  >
-                    <Link
-                      href={`/artists/${encodeURIComponent(artist.name)}`}
-                      className="block w-full"
-                    >
-                      <h3 className="text-xl font-bold mb-2">{artist.name}</h3>
-                      <p className="text-sm mb-4 line-clamp-3">{artist.bio}</p>
-
-                      {sampleArtwork && sampleArtwork.image && (
-                        <div className="relative h-40 mb-2">
-                          <img
-                            src={sampleArtwork.image.url}
-                            alt={sampleArtwork.title}
-                            className="w-full h-full object-cover rounded"
-                          />
-                          <div className="absolute bottom-0 right-0 p-1 bg-black bg-opacity-70 text-white text-xs">
-                            {sampleArtwork.title}
-                          </div>
-                        </div>
-                      )}
-                    </Link>
-                  </div>
-                )
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* デバッグ情報 */}
-        <ClientLogger
-          data={{
-            artistsCount: displayArtists.length,
-          }}
-        />
+        <GalleryWall items={artists} title="Artists" />
       </div>
     </div>
   );
